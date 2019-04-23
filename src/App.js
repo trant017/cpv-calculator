@@ -48,8 +48,8 @@ class App extends Component {
                     summary_views[this.state.spots[i][2]] += parseFloat(this.state.spots[i][3]);
                     summary_costs[this.state.spots[i][2]] += parseFloat(this.state.spots[i][4]);
                 } else {
-                    summary_views[this.state.spots[i][2]] = 0;
-                    summary_costs[this.state.spots[i][2]] = 0;
+                    summary_views[this.state.spots[i][2]] = parseFloat(this.state.spots[i][3]);
+                    summary_costs[this.state.spots[i][2]] = parseFloat(this.state.spots[i][4]);
                 }
             }
         }
@@ -84,12 +84,12 @@ class App extends Component {
                 for (let key in rotations) {
                     let spot_time = this.changeToTwentyFour(this.state.spots[i][1]);
                     if (spot_time <= rotations[key].end && spot_time >= rotations[key].start) {
-                        if (rotations[key].name in summary_views) {
-                            summary_views[rotations[key].name] += parseFloat(this.state.spots[i][3]);
-                            summary_costs[rotations[key].name] += parseFloat(this.state.spots[i][4]);
+                        if (rotations[key].name + '__' + this.state.spots[i][0] in summary_views) {
+                            summary_views[rotations[key].name + '__' + this.state.spots[i][0]] += parseFloat(this.state.spots[i][3]);
+                            summary_costs[rotations[key].name + '__' + this.state.spots[i][0]] += parseFloat(this.state.spots[i][4]);
                         } else {
-                            summary_views[rotations[key].name] = 0;
-                            summary_costs[rotations[key].name] = 0;
+                            summary_views[rotations[key].name + '__' + this.state.spots[i][0]] = parseFloat(this.state.spots[i][3]);
+                            summary_costs[rotations[key].name + '__' + this.state.spots[i][0]] = parseFloat(this.state.spots[i][4]);
                         }
                     }
                 }
@@ -97,7 +97,8 @@ class App extends Component {
         }
         let summary = [];
         for (let key in summary_costs){
-            summary.push('The rotation ' + key + ' has a cpv of ' + (summary_costs[key]/summary_views[key]))
+            let temp = key.split('__');
+            summary.push('The ' + temp[0] + ' rotation  on ' + temp[1] + ' has a cpv of ' + (summary_costs[key]/summary_views[key]))
         }
         this.setState({rotationCPV: summary});
     }
@@ -121,7 +122,7 @@ class App extends Component {
         );
         return (
             <div className="App">
-                <header>
+                <header class="o-cpv__header">
                     CPV Calculator
                 </header>
                 <CSVReader
